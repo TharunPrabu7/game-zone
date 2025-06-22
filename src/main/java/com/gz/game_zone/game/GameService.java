@@ -19,66 +19,9 @@ public class GameService {
         this.gameRepository = gameRepository;
     }
 
-    public List<Game> getGame(){
-        return gameRepository.findAll();
-    }
-
-    public List<Game> getGameFromStudios(String gameStudios){
-        return gameRepository.findAll().stream()
-                .filter(Game -> gameStudios.equals(Game.getGameStudios()))
-                .collect(Collectors.toList());
-    }
-
-    public List<Game> getGameByName(String searchText){
-        return gameRepository.findAll().stream()
-                .filter(Game -> Game.getName().toLowerCase().contains(searchText.toLowerCase()))
-                .collect((Collectors.toList()));
-    }
-
-    public List<Game> getGameByGenre(String genre){
-        return gameRepository.findAll().stream()
-                .filter(Game -> Game.getGenre().toLowerCase().contains(genre.toLowerCase()))
-                .collect(Collectors.toList());
-    }
-
-    public List<Game> getGotyGames(){
-        return gameRepository.findAll().stream()
-                .filter(Game::isGoty)
-                .collect(Collectors.toList());
-    }
-
-    public List<Game> getGameByYear(int year){
-        return gameRepository.findAll().stream()
-                .filter(game -> game.getReleaseDate().getYear() == year)
-                .collect(Collectors.toList());
-    }
-
-    public List<Game> getGameByRating(float minRating){
-        return gameRepository.findAll().stream()
-                .filter(game -> game.getRating() >= minRating)
-                .collect(Collectors.toList());
-    }
-
-    public List<Game> getGameSortedByCopiesSold(){
-        return gameRepository.findAll().stream()
-                .sorted(Comparator.comparingLong(Game::getCopiesSold).reversed())
-                .collect(Collectors.toList());
-    }
-
-    public List<Game> getGameSortedByRevenue(){
-        return gameRepository.findAll().stream()
-                .sorted(Comparator.comparingLong(Game::getRevenue).reversed())
-                .collect(Collectors.toList());
-    }
-
-    public long getTotalRevenue(){
-        return gameRepository.findAll().stream()
-                .mapToLong(Game::getRevenue)
-                .sum();
-    }
-
-    public List<Game> getFilteredGames(String name, String gameStudio, String genre, Integer year,
+    public List<Game> getFilteredGames(String name, String gameStudio, String genre, Integer year, Float rating,
                                        String sortBy, String order, int page, int size) {
+
         Stream<Game> stream = gameRepository.findAll().stream();
 
         if (name != null)
@@ -93,7 +36,9 @@ public class GameService {
         if (year != null)
             stream = stream.filter(g -> g.getReleaseDate().getYear() == year);
 
-        // Sorting
+        if (rating != null)
+            stream = stream.filter(g -> g.getRating() >= rating);
+
         if (sortBy != null) {
             Comparator<Game> comparator = switch (sortBy) {
                 case "name" -> Comparator.comparing(Game::getName);
@@ -112,12 +57,13 @@ public class GameService {
             }
         }
 
-        // Pagination
+        // pagination
         return stream
                 .skip((long) page * size)
                 .limit(size)
                 .collect(Collectors.toList());
     }
+
 
 
     public Game addGame(Game game){

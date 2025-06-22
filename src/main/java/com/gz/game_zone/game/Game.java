@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "games_stat")
@@ -14,7 +14,8 @@ public class Game {
     @Column(name = "game", unique = true)
     private String name;
     private String genre;
-    private LocalDateTime releaseDate;
+    @Column(name = "released_year")
+    private LocalDate releaseDate;
     private long copiesSold;
     private float rating;
     private boolean goty;
@@ -24,7 +25,7 @@ public class Game {
     public Game() {
     }
 
-    public Game(String name, String genre, LocalDateTime releaseDate, long copiesSold, float rating, boolean goty, String gameStudios, long revenue) {
+    public Game(String name, String genre, LocalDate releaseDate, long copiesSold, float rating, boolean goty, String gameStudios, long revenue) {
         this.name = name;
         this.genre = genre;
         this.releaseDate = releaseDate;
@@ -51,11 +52,11 @@ public class Game {
         this.genre = genre;
     }
 
-    public LocalDateTime getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(LocalDateTime releaseDate) {
+    public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 

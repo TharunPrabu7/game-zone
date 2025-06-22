@@ -24,12 +24,13 @@ public class GameController {
             @RequestParam(required = false) String gameStudio,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Float rating,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String order
     ) {
-        return gameService.getFilteredGames(name, gameStudio, genre, year, sortBy, order, page, size);
+        return gameService.getFilteredGames(name, gameStudio, genre, year, rating, sortBy, order, page, size);
     }
 
     @PostMapping
