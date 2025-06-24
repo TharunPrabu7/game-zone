@@ -1,12 +1,18 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./components/login";
+import Signup from "./components/Signup";
 import GameDashboard from "./components/GameDashboard";
 
-const App = () => {
+function App() {
   return (
-    <div className="container">
-      <h1>Game Zone Dashboard</h1>
-      <GameDashboard />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/home" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<GameDashboard />} />
+      </Routes>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;
