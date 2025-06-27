@@ -1,5 +1,6 @@
-package com.gz.game_zone.game;
+package com.gz.game_zone.repo;
 
+import com.gz.game_zone.entity.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

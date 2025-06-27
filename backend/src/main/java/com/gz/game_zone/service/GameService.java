@@ -1,5 +1,7 @@
-package com.gz.game_zone.game;
+package com.gz.game_zone.service;
 
+import com.gz.game_zone.entity.Game;
+import com.gz.game_zone.repo.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

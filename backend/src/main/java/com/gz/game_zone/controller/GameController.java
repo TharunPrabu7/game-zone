@@ -1,5 +1,7 @@
-package com.gz.game_zone.game;
+package com.gz.game_zone.controller;
 
+import com.gz.game_zone.entity.Game;
+import com.gz.game_zone.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
