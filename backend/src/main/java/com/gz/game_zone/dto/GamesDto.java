@@ -1,48 +1,28 @@
-package com.gz.game_zone.entity;
+package com.gz.game_zone.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Entity
-@Table(name = "games_stat")
-public class Game {
-    @Id
-    @Column(name = "game", unique = true)
+@Repository
+public class GamesDto {
     private String name;
-
-    @Column(name = "genre")
     private String genre;
-
-    @Column(name = "released_year")
-    private LocalDate releaseDate;
-
-    @Column(name = "copies_sold")
+    private LocalDate releasedDate;
     private Long copiesSold;
-
-    @Column(name = "rating")
     private Float rating;
-
-    @Column(name = "goty")
     private Boolean isGameOfTheYear;
-
-    @Column(name = "game_studios")
     private String gameStudios;
-
-    @Column(name = "revenue")
     private Long revenue;
 
-    public Game() {
+    public GamesDto() {
     }
 
-    public Game(String name, String genre, LocalDate releaseDate, Long copiesSold, Float rating, Boolean isGameOfTheYear, String gameStudios, Long revenue) {
+    public GamesDto(String name, String genre, LocalDate releasedDate, long copiesSold, float rating, boolean isGameOfTheYear, String gameStudios, long revenue) {
         this.name = name;
         this.genre = genre;
-        this.releaseDate = releaseDate;
+        this.releasedDate = releasedDate;
         this.copiesSold = copiesSold;
         this.rating = rating;
         this.isGameOfTheYear = isGameOfTheYear;
@@ -66,35 +46,35 @@ public class Game {
         this.genre = genre;
     }
 
-    public LocalDate getReleaseDate() {
-        return releaseDate;
+    public LocalDate getReleasedDate() {
+        return releasedDate;
     }
 
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setReleasedDate(LocalDate releasedDate) {
+        this.releasedDate = releasedDate;
     }
 
-    public Long getCopiesSold() {
+    public long getCopiesSold() {
         return copiesSold;
     }
 
-    public void setCopiesSold(Long copiesSold) {
+    public void setCopiesSold(long copiesSold) {
         this.copiesSold = copiesSold;
     }
 
-    public Float getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(Float rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 
-    public Boolean getGameOfTheYear() {
+    public boolean isGameOfTheYear() {
         return isGameOfTheYear;
     }
 
-    public void setGameOfTheYear(Boolean gameOfTheYear) {
+    public void setGameOfTheYear(boolean gameOfTheYear) {
         isGameOfTheYear = gameOfTheYear;
     }
 
@@ -106,32 +86,32 @@ public class Game {
         this.gameStudios = gameStudios;
     }
 
-    public Long getRevenue() {
+    public long getRevenue() {
         return revenue;
     }
 
-    public void setRevenue(Long revenue) {
+    public void setRevenue(long revenue) {
         this.revenue = revenue;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
-        return Objects.equals(name, game.name) && Objects.equals(genre, game.genre) && Objects.equals(releaseDate, game.releaseDate) && Objects.equals(copiesSold, game.copiesSold) && Objects.equals(rating, game.rating) && Objects.equals(isGameOfTheYear, game.isGameOfTheYear) && Objects.equals(gameStudios, game.gameStudios) && Objects.equals(revenue, game.revenue);
+        GamesDto gamesDto = (GamesDto) o;
+        return copiesSold == gamesDto.copiesSold && Float.compare(rating, gamesDto.rating) == 0 && isGameOfTheYear == gamesDto.isGameOfTheYear && revenue == gamesDto.revenue && Objects.equals(name, gamesDto.name) && Objects.equals(genre, gamesDto.genre) && Objects.equals(releasedDate, gamesDto.releasedDate) && Objects.equals(gameStudios, gamesDto.gameStudios);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, genre, releaseDate, copiesSold, rating, isGameOfTheYear, gameStudios, revenue);
+        return Objects.hash(name, genre, releasedDate, copiesSold, rating, isGameOfTheYear, gameStudios, revenue);
     }
 
     @Override
     public String toString() {
-        return "Game{" +
+        return "GamesDto{" +
                 "name='" + name + '\'' +
                 ", genre='" + genre + '\'' +
-                ", releaseDate=" + releaseDate +
+                ", releasedDate=" + releasedDate +
                 ", copiesSold=" + copiesSold +
                 ", rating=" + rating +
                 ", isGameOfTheYear=" + isGameOfTheYear +
