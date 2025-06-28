@@ -19,7 +19,7 @@ public class Game {
     private String genre;
 
     @Column(name = "released_year")
-    private LocalDate releaseDate;
+    private LocalDate releasedDate;
 
     @Column(name = "copies_sold")
     private Long copiesSold;
@@ -39,10 +39,10 @@ public class Game {
     public Game() {
     }
 
-    public Game(String name, String genre, LocalDate releaseDate, Long copiesSold, Float rating, Boolean isGameOfTheYear, String gameStudios, Long revenue) {
+    public Game(String name, String genre, LocalDate releasedDate, Long copiesSold, Float rating, Boolean isGameOfTheYear, String gameStudios, Long revenue) {
         this.name = name;
         this.genre = genre;
-        this.releaseDate = releaseDate;
+        this.releasedDate = releasedDate;
         this.copiesSold = copiesSold;
         this.rating = rating;
         this.isGameOfTheYear = isGameOfTheYear;
@@ -66,12 +66,12 @@ public class Game {
         this.genre = genre;
     }
 
-    public LocalDate getReleaseDate() {
-        return releaseDate;
+    public LocalDate getReleasedDate() {
+        return releasedDate;
     }
 
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setReleasedDate(LocalDate releasedDate) {
+        this.releasedDate = releasedDate;
     }
 
     public Long getCopiesSold() {
@@ -118,12 +118,12 @@ public class Game {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
-        return Objects.equals(name, game.name) && Objects.equals(genre, game.genre) && Objects.equals(releaseDate, game.releaseDate) && Objects.equals(copiesSold, game.copiesSold) && Objects.equals(rating, game.rating) && Objects.equals(isGameOfTheYear, game.isGameOfTheYear) && Objects.equals(gameStudios, game.gameStudios) && Objects.equals(revenue, game.revenue);
+        return Objects.equals(name, game.name) && Objects.equals(genre, game.genre) && Objects.equals(releasedDate, game.releasedDate) && Objects.equals(copiesSold, game.copiesSold) && Objects.equals(rating, game.rating) && Objects.equals(isGameOfTheYear, game.isGameOfTheYear) && Objects.equals(gameStudios, game.gameStudios) && Objects.equals(revenue, game.revenue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, genre, releaseDate, copiesSold, rating, isGameOfTheYear, gameStudios, revenue);
+        return Objects.hash(name, genre, releasedDate, copiesSold, rating, isGameOfTheYear, gameStudios, revenue);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class Game {
         return "Game{" +
                 "name='" + name + '\'' +
                 ", genre='" + genre + '\'' +
-                ", releaseDate=" + releaseDate +
+                ", releaseDate=" + releasedDate +
                 ", copiesSold=" + copiesSold +
                 ", rating=" + rating +
                 ", isGameOfTheYear=" + isGameOfTheYear +

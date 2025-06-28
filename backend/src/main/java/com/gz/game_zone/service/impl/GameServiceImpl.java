@@ -23,13 +23,18 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public Optional<Game> getGameByName(String name){
+        return gameRepository.findByName(name);
+    }
+
+    @Override
     public List<Game> getFilteredGames(String name, String genre, LocalDate releaseDate,
                                        Long copiesSold, Float rating, Boolean isGameOfTheYear,
                                        String gameStudios, Long revenue) {
         return gameRepository.findAll().stream()
                 .filter(game -> name == null || game.getName().toLowerCase().contains(name.toLowerCase()))
                 .filter(game -> genre == null || game.getGenre().toLowerCase().contains(genre.toLowerCase()))
-                .filter(game -> releaseDate == null || game.getReleaseDate().equals(releaseDate))
+                .filter(game -> releaseDate == null || game.getReleasedDate().equals(releaseDate))
                 .filter(game -> copiesSold == null || game.getCopiesSold() >= copiesSold)
                 .filter(game -> rating == null || game.getRating() >= rating)
                 .filter(game -> isGameOfTheYear == null || game.getGameOfTheYear().equals(isGameOfTheYear))

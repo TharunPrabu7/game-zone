@@ -5,12 +5,14 @@ import com.gz.game_zone.entity.Game;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface GameService {
 
     Game addGame(GamesDto gamesDto);
     Game updateGame(String name, GamesDto gameDto);
     void deleteGame(String name);
-
     List<Game> getFilteredGames(String name, String genre, LocalDate releasedDate, Long copiesSold, Float rating, Boolean isGameOfTheYear, String gameStudio, Long revenue);
+
+    Optional<Game> getGameByName(String name);
 }

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping(path = "/api/v1/game")
 public class GameController {
 
@@ -37,6 +37,13 @@ public class GameController {
             @RequestParam(required = false) Long revenue
     ){
         return gameService.getFilteredGames(name, genre, releasedDate, copiesSold, rating, isGameOfTheYear, gameStudio, revenue);
+    }
+
+    @GetMapping("/{name}")
+    public ResponseEntity<Game> getGameByName(@PathVariable String name){
+        return gameService.getGameByName(name)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(path = "/save")

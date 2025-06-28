@@ -1,18 +1,19 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./components/login";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./components/Signup";
-import GameDashboard from "./components/GameDashboard";
+import Login from "./components/Login";
+import GameTable from "./components/GameTable";
+import GameDetail from "./components/GameDetail.tsx";
 
-function App() {
+export default function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path="/home" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<GameDashboard />} />
+        <Route path="/login"  element={<Login  />} />
+        <Route path="/game/table" element={<GameTable />} />
+        <Route path="/game/:name" element={<GameDetail />} />
+        <Route path="*" element={<Login />} />   {/* default to table */}
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
-
-export default App;

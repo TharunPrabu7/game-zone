@@ -1,14 +1,34 @@
-import React from "react";
-import './Login.css';
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./Login.css";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // local component state
+  const [fullName, setFullName]   = useState("");
+  const [email, setEmail]         = useState("");
+  const [password, setPassword]   = useState("");
+  const [error, setError]         = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Signup logic goes here
-    navigate("/dashboard"); // Navigate after signup
+    setError(null);                         // clear old error
+
+    try {
+      await axios.post("http://localhost:8080/api/v1/user/save", {
+        userName: fullName,
+        email,
+        password
+      });
+      // on success → go to dashboard (or login)
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(
+        err.response?.data || "Registration failed, please try again."
+      );
+    }
   };
 
   return (
@@ -17,28 +37,47 @@ const Signup: React.FC = () => {
         <p id="heading">Sign Up</p>
 
         <div className="field">
-          <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/>
-            <path fillRule="evenodd" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-          </svg>
-          <input autoComplete="off" placeholder="Full Name" className="input-field" type="text" required />
+          {/* full name */}
+          <input
+            autoComplete="off"
+            placeholder="Full Name"
+            className="input-field"
+            type="text"
+            value={fullName}
+            onChange={e => setFullName(e.target.value)}
+            required
+          />
         </div>
 
         <div className="field">
-          <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0V4zm0 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6H0z"/>
-          </svg>
-          <input placeholder="Email" className="input-field" type="email" required />
+          {/* email */}
+          <input
+            placeholder="Email"
+            className="input-field"
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
         </div>
 
         <div className="field">
-          <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-          </svg>
-          <input placeholder="Password" className="input-field" type="password" required />
+          {/* password */}
+          <input
+            placeholder="Password"
+            className="input-field"
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
         </div>
 
-        <button type="submit" className="button1" style={{ width: "100%" }}>Create Account</button>
+        {error && <p style={{ color: "salmon", marginTop: 4 }}>{error}</p>}
+
+        <button type="submit" className="button1" style={{ width: "100%" }}>
+          Create Account
+        </button>
 
         <button
           type="button"
