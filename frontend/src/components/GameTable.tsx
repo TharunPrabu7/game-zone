@@ -1,74 +1,128 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import type { Game } from "../types/Game";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useGames } from "../contexts/GameContext";
+import type { Game } from "../contexts/GameContext";
+import { useAuth } from "../contexts/AuthContext";
 
+/* ─────────────────────  styles ───────────────────── */
 const th: React.CSSProperties = {
   border: "1px solid #ddd",
   padding: "8px",
   background: "#f2f2f2",
-  textAlign: "left"
+  textAlign: "left",
 };
 
 const td: React.CSSProperties = {
   border: "1px solid #ddd",
-  padding: "8px"
+  padding: "8px",
 };
 
-const GameTable: React.FC = () => {
-  const [games, setGames]   = useState<Game[]>([]);
-  const [error, setError]   = useState<string | null>(null);
-  const navigate            = useNavigate();
+const actionLink: React.CSSProperties = {
+  marginRight: "0.5rem",
+  color: "#007bff",
+  cursor: "pointer",
+};
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/v1/game/table")
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch games");
-        return res.json();
-      })
-      .then(setGames)
-      .catch(err => setError(err.message));
-  }, []);
+/* ─────────────────── Logout Button ────────────────── */
+const LogoutButton: React.FC = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  return (
+    <button
+      onClick={() => {
+        logout();
+        navigate("/login");
+      }}
+      style={{
+        position: "fixed",
+        top: 20,
+        right: 20,
+        background: "#e63946",
+        color: "#fff",
+        border: "none",
+        padding: "8px 16px",
+        borderRadius: 6,
+        cursor: "pointer",
+      }}
+    >
+      Logout
+    </button>
+  );
+};
+
+/* ──────────────────  GameTable  ───────────────────── */
+const GameTable: React.FC = () => {
+  const { games }   = useGames();
+  const { loggedIn } = useAuth();
+  const navigate     = useNavigate();
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1 style={{ textAlign: "center" }}>Game Table</h1>
+      {loggedIn && <LogoutButton />}
 
-      {error ? (
-        <p style={{ color: "red" }}>{error}</p>
-      ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th style={th}>Name</th>
-              <th style={th}>Genre</th>
-              <th style={th}>Released</th>
-              <th style={th}>Copies Sold</th>
-              <th style={th}>Rating</th>
-              <th style={th}>GOTY</th>
-              <th style={th}>Studio</th>
-              <th style={th}>Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {games.map(game => (
-              <tr
-                key={game.name}
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(`/game/${encodeURIComponent(game.name)}`)}
-              >
-                <td style={td}>{game.name}</td>
-                <td style={td}>{game.genre}</td>
-                <td style={td}>{game.releasedDate}</td>
-                <td style={td}>{game.copiesSold}</td>
-                <td style={td}>{game.rating}</td>
-                <td style={td}>{game.gameOfTheYear ? "Yes" : "No"}</td>
-                <td style={td}>{game.gameStudios}</td>
-                <td style={td}>${game.revenue.toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <h1 style={{ textAlign: "center", marginBottom: "1rem" }}>Game Table</h1>
+
+      {loggedIn && (
+        <div style={{ marginBottom: "1rem" }}>
+          <Link to="/game/add" style={{ ...actionLink, fontWeight: 600 }}>
+            ➕ Add Game
+          </Link>
+        </div>
       )}
+
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            <th style={th}>Name</th>
+            <th style={th}>Genre</th>
+            <th style={th}>Released</th>
+            <th style={th}>Copies Sold</th>
+            <th style={th}>Rating</th>
+            <th style={th}>GOTY</th>
+            <th style={th}>Studio</th>
+            <th style={th}>Revenue</th>
+            {loggedIn && <th style={th}>Actions</th>}
+          </tr>
+        </thead>
+
+        <tbody>
+          {games.map((g: Game) => (
+            <tr key={g.name}>
+              <td
+                style={{ ...td, cursor: "pointer", color: "#007bff" }}
+                onClick={() => navigate(`/game/${encodeURIComponent(g.name)}`)}
+              >
+                {g.name}
+              </td>
+              <td style={td}>{g.genre}</td>
+              <td style={td}>{g.releasedDate}</td>
+              <td style={td}>{g.copiesSold.toLocaleString()}</td>
+              <td style={td}>{g.rating}</td>
+              <td style={td}>{g.gameOfTheYear ? "Yes" : "No"}</td>
+              <td style={td}>{g.gameStudios}</td>
+              <td style={td}>${g.revenue.toLocaleString()}</td>
+
+              {loggedIn && (
+                <td style={td}>
+                  <Link
+                    to={`/game/edit/${encodeURIComponent(g.name)}`}
+                    style={actionLink}
+                  >
+                    Edit
+                  </Link>
+                  |
+                  <Link
+                    to={`/game/delete/${encodeURIComponent(g.name)}`}
+                    style={{ ...actionLink, color: "red", marginLeft: "0.5rem" }}
+                  >
+                    Delete
+                  </Link>
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
