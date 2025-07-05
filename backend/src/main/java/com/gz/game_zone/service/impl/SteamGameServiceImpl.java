@@ -80,18 +80,22 @@ public class SteamGameServiceImpl implements SteamGameService {
         return steamGame;
     }
 
+    // Filters by genre
     public List<GameSummaryDto> getByGenre(String genre) {
         return steamGameRepository.findByGenreName(genre);
     }
 
+    // Filters by tag
     public List<GameSummaryDto> getByTag(String tag) {
         return steamGameRepository.findByTagName(tag);
     }
 
+    // Filters by developers
     public List<GameSummaryDto> getByDeveloper(String developer) {
         return steamGameRepository.findByDeveloperName(developer);
     }
 
+    // Filters by publishers
     public List<GameSummaryDto> getByPublisher(String publisher) {
         return steamGameRepository.findByPublisherName(publisher);
     }
@@ -140,6 +144,7 @@ public class SteamGameServiceImpl implements SteamGameService {
         return null;
     }
 
+    // Add a gama
     @Override
     public SteamGameDto createGame(SteamGameDto steamGameDto) {
         SteamGame game = new SteamGame();
@@ -164,6 +169,7 @@ public class SteamGameServiceImpl implements SteamGameService {
         return mapToDto(game);
     }
 
+    // Update a game
     @Override
     public SteamGameDto updateGame(SteamGameDto steamGameDto, int id) {
         SteamGame game = steamGameRepository.findById(id).orElseThrow(() -> new GameNotFoundException("Game not found"));
@@ -176,6 +182,7 @@ public class SteamGameServiceImpl implements SteamGameService {
         return mapToDto(updatedGame);
     }
 
+    // Delete a game
     @Override
     public void deleteGameById(int id) {
         SteamGame game = steamGameRepository.findById(id).orElseThrow(() -> new GameNotFoundException("Game not found"));

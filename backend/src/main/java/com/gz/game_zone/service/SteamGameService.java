@@ -19,17 +19,16 @@ public interface SteamGameService {
 
     GameDto getGame(Integer appid);
     GameDto getGameByGenre(String genre);
-
-    SteamGameDto createGame(SteamGameDto steamGameDto);
     SteamGameDto getGameById(int id);
+
+    // Add, Update and Delete a game
+    SteamGameDto createGame(SteamGameDto steamGameDto);
     SteamGameDto updateGame(SteamGameDto steamGameDto, int id);
     void deleteGameById(int id);
 
+    // Filters by tag, genre, developers and publishers
     List<GameSummaryDto> getByGenre(String genre);
-
     List<GameSummaryDto> getByTag(String tag);
-
     List<GameSummaryDto> getByDeveloper(String developer);
-
     List<GameSummaryDto> getByPublisher(String publisher);
 }
