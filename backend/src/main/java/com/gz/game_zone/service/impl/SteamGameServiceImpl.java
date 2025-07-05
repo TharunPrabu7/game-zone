@@ -1,7 +1,10 @@
 package com.gz.game_zone.service.impl;
 
+import com.gz.game_zone.dto.GameDto;
+import com.gz.game_zone.dto.GameSummaryDto;
 import com.gz.game_zone.dto.SteamGameDto;
-import com.gz.game_zone.entity.SteamGame;
+import com.gz.game_zone.dto.SteamGameResponse;
+import com.gz.game_zone.entity.*;
 import com.gz.game_zone.exceptions.GameNotFoundException;
 import com.gz.game_zone.repo.SteamGameRepository;
 import com.gz.game_zone.service.SteamGameService;
@@ -27,7 +30,7 @@ public class SteamGameServiceImpl implements SteamGameService {
                 .filter(g -> name == null ||
                         (g.getName() != null && g.getName().toLowerCase().contains(name.toLowerCase())))
                 .filter(g -> releasedDate == null || releasedDate.equals(g.getReleasedDate()))
-                .filter(g -> metaCritic == null || (g.getMetaCritic() != null && g.getMetaCritic() >= metaCritic))
+                .filter(g -> metaCritic == null || (g.getMetacritic() != null && g.getMetacritic() >= metaCritic))
                 .toList();
     }
 
@@ -40,29 +43,57 @@ public class SteamGameServiceImpl implements SteamGameService {
     }
 
     @Override
-    public List<SteamGameDto> getAllGame() {
-        List<SteamGame> game = steamGameRepository.findAll();
-        return game.stream().map(this::mapToDto).collect(Collectors.toList());
+    public SteamGameResponse getAllGame(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<SteamGame> games = steamGameRepository.findAll(pageable);
+        List<SteamGame> listOfGames = games.getContent();
+        List<SteamGameDto> content = listOfGames.stream().map(this::mapToDto).toList();
+
+        SteamGameResponse gameResponse = new SteamGameResponse();
+        gameResponse.setContent(content);
+        gameResponse.setPageNo(games.getNumber());
+        gameResponse.setPageSize(games.getSize());
+        gameResponse.setTotalPages(games.getTotalPages());
+        gameResponse.setTotalElements(games.getTotalElements());
+        gameResponse.setLast(gameResponse.isLast());
+
+        return gameResponse;
     }
 
     private SteamGameDto mapToDto(SteamGame steamGame) {
         SteamGameDto steamGameDto = new SteamGameDto();
-        steamGameDto.setAppId(steamGame.getAppId());
+        steamGameDto.setAppId(steamGame.getAppid());
         steamGameDto.setName(steamGame.getName());
         steamGameDto.setReleasedDate(steamGame.getReleasedDate());
-        steamGameDto.setMetaCritic(steamGame.getMetaCritic());
+        steamGameDto.setMetaCritic(steamGame.getMetacritic());
 
         return steamGameDto;
     }
 
     private SteamGame mapToEntity(SteamGameDto steamGameDto) {
         SteamGame steamGame = new SteamGame();
-        steamGame.setAppId(steamGameDto.getAppId());
+        steamGame.setAppid(steamGameDto.getAppId());
         steamGame.setName(steamGameDto.getName());
         steamGame.setReleasedDate(steamGameDto.getReleasedDate());
-        steamGame.setMetaCritic(steamGameDto.getMetaCritic());
+        steamGame.setMetacritic(steamGameDto.getMetaCritic());
 
         return steamGame;
+    }
+
+    public List<GameSummaryDto> getByGenre(String genre) {
+        return steamGameRepository.findByGenreName(genre);
+    }
+
+    public List<GameSummaryDto> getByTag(String tag) {
+        return steamGameRepository.findByTagName(tag);
+    }
+
+    public List<GameSummaryDto> getByDeveloper(String developer) {
+        return steamGameRepository.findByDeveloperName(developer);
+    }
+
+    public List<GameSummaryDto> getByPublisher(String publisher) {
+        return steamGameRepository.findByPublisherName(publisher);
     }
 
     @Override
@@ -71,19 +102,58 @@ public class SteamGameServiceImpl implements SteamGameService {
     }
 
     @Override
+    public GameDto getGame(Integer appid) {
+        SteamGame g = steamGameRepository.findByAppid(appid)
+                .orElseThrow(() ->
+                        new GameNotFoundException("Game " + appid + " not found"));
+
+        return new GameDto(
+                g.getAppid(),
+                g.getName(),
+                g.getReleasedDate(),
+                g.getMetacritic(),
+                g.getDescription(),
+                g.getBoxImage(),
+                g.getBackgroundImage(),
+                g.getGenres().stream()
+                        .map(Genre::getName)
+                        .sorted()
+                        .toList(),
+                g.getTags().stream()
+                        .map(Tag::getName)
+                        .sorted()
+                        .toList(),
+                g.getDevelopers().stream()
+                        .map(Developer::getName)
+                        .sorted()
+                        .toList(),
+                g.getPublishers().stream()
+                        .map(Publisher::getName)
+                        .sorted()
+                        .toList()
+        );
+    }
+
+    @Override
+    public GameDto getGameByGenre(String genre) {
+
+        return null;
+    }
+
+    @Override
     public SteamGameDto createGame(SteamGameDto steamGameDto) {
         SteamGame game = new SteamGame();
         game.setName(game.getName());
         game.setReleasedDate(game.getReleasedDate());
-        game.setMetaCritic(game.getMetaCritic());
+        game.setMetacritic(game.getMetacritic());
 
         SteamGame newGame = steamGameRepository.save(game);
 
         SteamGameDto gameResponse = new SteamGameDto();
-        gameResponse.setAppId(newGame.getAppId());
+        gameResponse.setAppId(newGame.getAppid());
         gameResponse.setName(newGame.getName());
         gameResponse.setReleasedDate(newGame.getReleasedDate());
-        gameResponse.setMetaCritic(newGame.getMetaCritic());
+        gameResponse.setMetaCritic(newGame.getMetacritic());
 
         return gameResponse;
     }
@@ -100,7 +170,7 @@ public class SteamGameServiceImpl implements SteamGameService {
 
         game.setName(steamGameDto.getName());
         game.setReleasedDate(steamGameDto.getReleasedDate());
-        game.setMetaCritic(steamGameDto.getMetaCritic());
+        game.setMetacritic(steamGameDto.getMetaCritic());
 
         SteamGame updatedGame = steamGameRepository.save(game);
         return mapToDto(updatedGame);

@@ -1,7 +1,10 @@
 package com.gz.game_zone.dto;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class SteamGameResponse {
     private List<SteamGameDto> content;
     private int pageNo;

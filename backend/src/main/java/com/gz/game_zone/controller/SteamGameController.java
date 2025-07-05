@@ -1,6 +1,9 @@
 package com.gz.game_zone.controller;
 
+import com.gz.game_zone.dto.GameDto;
+import com.gz.game_zone.dto.GameSummaryDto;
 import com.gz.game_zone.dto.SteamGameDto;
+import com.gz.game_zone.dto.SteamGameResponse;
 import com.gz.game_zone.entity.Game;
 import com.gz.game_zone.entity.SteamGame;
 import com.gz.game_zone.service.SteamGameService;
@@ -20,17 +23,41 @@ public class SteamGameController {
     private SteamGameService service;
 
     @GetMapping("/game")
-    public ResponseEntity<List<SteamGame>> getGames(
+    public ResponseEntity<SteamGameResponse> getGames(
             @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
     ) {
-        List<SteamGame> games = service.getAll(pageNo, pageSize);
-        return ResponseEntity.ok(games);
+        return new ResponseEntity<>(service.getAllGame(pageNo, pageSize), HttpStatus.OK);
     }
 
     @GetMapping("/game/{id}")
     public ResponseEntity<SteamGameDto> gameDetail(@PathVariable int id) {
         return new ResponseEntity<>(service.getGameById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/by-genre")
+    public ResponseEntity<List<GameSummaryDto>> getByGenre(@RequestParam String genre) {
+        return ResponseEntity.ok(service.getByGenre(genre));
+    }
+
+    @GetMapping("/by-tag")
+    public ResponseEntity<List<GameSummaryDto>> getByTag(@RequestParam String tag) {
+        return ResponseEntity.ok(service.getByTag(tag));
+    }
+
+    @GetMapping("/by-developer")
+    public ResponseEntity<List<GameSummaryDto>> getByDeveloper(@RequestParam String developer) {
+        return ResponseEntity.ok(service.getByDeveloper(developer));
+    }
+
+    @GetMapping("/by-publisher")
+    public ResponseEntity<List<GameSummaryDto>> getByPublisher(@RequestParam String publisher) {
+        return ResponseEntity.ok(service.getByPublisher(publisher));
+    }
+
+    @GetMapping("/{appid}")
+    public ResponseEntity<GameDto> getOneGameById(@PathVariable int appid) {
+        return ResponseEntity.ok(service.getGame(appid));
     }
 
     @PostMapping("/game/add")
