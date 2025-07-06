@@ -3,7 +3,6 @@ package com.gz.game_zone.controller;
 import com.gz.game_zone.dto.*;
 import com.gz.game_zone.service.SteamGameService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +17,7 @@ public class SteamGameController {
     @Autowired
     private SteamGameService service;
 
+    // Get everything
     @GetMapping("/game")
     public ResponseEntity<SteamGameResponse> getGames(
             @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
@@ -78,6 +78,13 @@ public class SteamGameController {
             @RequestParam int pageNo,
             @RequestParam int pageSize) {
         return ResponseEntity.ok(service.getByPublisherWithPagination(publisher, pageNo, pageSize));
+    }
+
+    // Get sorted list by meta critic score
+    @GetMapping("/game/sort/{field}")
+    public ResponseEntity<List<SteamGameDto>> getGameWithSort(@PathVariable String field) {
+        List<SteamGameDto> allGamesSorted = service.findGameWithSorting(field);
+        return ResponseEntity.ok(allGamesSorted);
     }
 
     // Get every detail about a game using its id

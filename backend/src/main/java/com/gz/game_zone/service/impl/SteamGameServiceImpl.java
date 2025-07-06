@@ -70,6 +70,12 @@ public class SteamGameServiceImpl implements SteamGameService {
         return steamGame;
     }
 
+    // Sorted games with fields
+    public List<SteamGameDto> findGameWithSorting(String field) {
+        List<SteamGame> games =  steamGameRepository.findAll(Sort.by(field));
+        return games.stream().map(this::mapToDto).toList();
+    }
+
     // Filters by genre
     public List<GameSummaryDto> getByGenre(String genre) {
         return steamGameRepository.findByGenreName(genre);

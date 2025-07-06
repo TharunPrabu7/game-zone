@@ -36,4 +36,6 @@ public interface SteamGameService {
     PagedResponse<GameSummaryDto> getByTagWithPagination(String tag, int pageNo, int pageSize);
     PagedResponse<GameSummaryDto> getByDeveloperWithPagination(String developer, int pageNo, int pageSize);
     PagedResponse<GameSummaryDto> getByPublisherWithPagination(String publisher, int pageNo, int pageSize);
+
+    List<SteamGameDto> findGameWithSorting(String field);
 }
