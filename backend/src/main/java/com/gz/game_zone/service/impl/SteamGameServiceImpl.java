@@ -1,9 +1,6 @@
 package com.gz.game_zone.service.impl;
 
-import com.gz.game_zone.dto.GameDto;
-import com.gz.game_zone.dto.GameSummaryDto;
-import com.gz.game_zone.dto.SteamGameDto;
-import com.gz.game_zone.dto.SteamGameResponse;
+import com.gz.game_zone.dto.*;
 import com.gz.game_zone.entity.*;
 import com.gz.game_zone.exceptions.GameNotFoundException;
 import com.gz.game_zone.repo.SteamGameRepository;
@@ -12,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,14 +30,6 @@ public class SteamGameServiceImpl implements SteamGameService {
                 .filter(g -> releasedDate == null || releasedDate.equals(g.getReleasedDate()))
                 .filter(g -> metaCritic == null || (g.getMetacritic() != null && g.getMetacritic() >= metaCritic))
                 .toList();
-    }
-
-    @Override
-    public List<SteamGameDto> getAll(int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<SteamGame> games = steamGameRepository.findAll(pageable);
-        List<SteamGame> listOfSteamGame = games.getContent();
-        return listOfSteamGame.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -100,9 +90,69 @@ public class SteamGameServiceImpl implements SteamGameService {
         return steamGameRepository.findByPublisherName(publisher);
     }
 
+    // Filter by genre, tag, developer and publishers with pagination
+    @Override
+    public PagedResponse<GameSummaryDto> getByGenreWithPagination(String genre, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<GameSummaryDto> page =  steamGameRepository.findByGenreNameWithPage(genre, pageable);
+
+        return new PagedResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
+    }
+    @Override
+    public PagedResponse<GameSummaryDto> getByTagWithPagination(String tag, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<GameSummaryDto> page =  steamGameRepository.findByTagNameWithPage(tag, pageable);
+
+        return new PagedResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
+    }
+    @Override
+    public PagedResponse<GameSummaryDto> getByDeveloperWithPagination(String developer, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<GameSummaryDto> page =  steamGameRepository.findByDeveloperNameWithPage(developer, pageable);
+
+        return new PagedResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
+    }
+    @Override
+    public PagedResponse<GameSummaryDto> getByPublisherWithPagination(String publisher, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<GameSummaryDto> page =  steamGameRepository.findByPublisherNameWithPage(publisher, pageable);
+
+        return new PagedResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
+    }
+
+    // Get game by its name
     @Override
     public Object getGameByName(String name) {
-        return name;
+        return steamGameRepository.findAll().stream()
+                .filter(g -> g.getName().contains(name)).toList();
     }
 
     @Override
@@ -138,13 +188,7 @@ public class SteamGameServiceImpl implements SteamGameService {
         );
     }
 
-    @Override
-    public GameDto getGameByGenre(String genre) {
-
-        return null;
-    }
-
-    // Add a gama
+    // Add a game
     @Override
     public SteamGameDto createGame(SteamGameDto steamGameDto) {
         SteamGame game = new SteamGame();
@@ -163,6 +207,7 @@ public class SteamGameServiceImpl implements SteamGameService {
         return gameResponse;
     }
 
+    // Get game by appid
     @Override
     public SteamGameDto getGameById(int id) {
         SteamGame game = steamGameRepository.findById(id).orElseThrow(() -> new GameNotFoundException("Game not found"));

@@ -1,13 +1,9 @@
 package com.gz.game_zone.controller;
 
-import com.gz.game_zone.dto.GameDto;
-import com.gz.game_zone.dto.GameSummaryDto;
-import com.gz.game_zone.dto.SteamGameDto;
-import com.gz.game_zone.dto.SteamGameResponse;
-import com.gz.game_zone.entity.Game;
-import com.gz.game_zone.entity.SteamGame;
+import com.gz.game_zone.dto.*;
 import com.gz.game_zone.service.SteamGameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,48 +26,81 @@ public class SteamGameController {
         return new ResponseEntity<>(service.getAllGame(pageNo, pageSize), HttpStatus.OK);
     }
 
-    @GetMapping("/game/{id}")
+    // Get app id, name, meta critic score and released data of a game from its id
+    @GetMapping("/{id}")
     public ResponseEntity<SteamGameDto> gameDetail(@PathVariable int id) {
         return new ResponseEntity<>(service.getGameById(id), HttpStatus.OK);
     }
 
+    // Filter by genre, tag, developer and publisher
     @GetMapping("/by-genre")
     public ResponseEntity<List<GameSummaryDto>> getByGenre(@RequestParam String genre) {
         return ResponseEntity.ok(service.getByGenre(genre));
     }
-
     @GetMapping("/by-tag")
     public ResponseEntity<List<GameSummaryDto>> getByTag(@RequestParam String tag) {
         return ResponseEntity.ok(service.getByTag(tag));
     }
-
     @GetMapping("/by-developer")
     public ResponseEntity<List<GameSummaryDto>> getByDeveloper(@RequestParam String developer) {
         return ResponseEntity.ok(service.getByDeveloper(developer));
     }
-
     @GetMapping("/by-publisher")
     public ResponseEntity<List<GameSummaryDto>> getByPublisher(@RequestParam String publisher) {
         return ResponseEntity.ok(service.getByPublisher(publisher));
     }
 
-    @GetMapping("/{appid}")
+    // Filter by genre, tag, developer and publisher with pagination
+    @GetMapping("/by-genre-page")
+    public ResponseEntity<PagedResponse<GameSummaryDto>> getByGenreWithPage(
+            @RequestParam String genre,
+            @RequestParam int pageNo,
+            @RequestParam int pageSize) {
+        return ResponseEntity.ok(service.getByGenreWithPagination(genre, pageNo, pageSize));
+    }
+    @GetMapping("/by-tag-page")
+    public ResponseEntity<PagedResponse<GameSummaryDto>> getByTagWithPage(
+            @RequestParam String tag,
+            @RequestParam int pageNo,
+            @RequestParam int pageSize) {
+        return ResponseEntity.ok(service.getByTagWithPagination(tag, pageNo, pageSize));
+    }
+    @GetMapping("/by-developer-page")
+    public ResponseEntity<PagedResponse<GameSummaryDto>> getByDeveloperWithPage(
+            @RequestParam String developer,
+            @RequestParam int pageNo,
+            @RequestParam int pageSize) {
+        return ResponseEntity.ok(service.getByDeveloperWithPagination(developer, pageNo, pageSize));
+    }
+    @GetMapping("/by-publisher-page")
+    public ResponseEntity<PagedResponse<GameSummaryDto>> getByPublisher(
+            @RequestParam String publisher,
+            @RequestParam int pageNo,
+            @RequestParam int pageSize) {
+        return ResponseEntity.ok(service.getByPublisherWithPagination(publisher, pageNo, pageSize));
+    }
+
+    // Get every detail about a game using its id
+    @GetMapping("/game/{appid}")
     public ResponseEntity<GameDto> getOneGameById(@PathVariable int appid) {
         return ResponseEntity.ok(service.getGame(appid));
     }
 
+    // Add a game
     @PostMapping("/game/add")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<SteamGameDto> addGame(@RequestBody SteamGameDto steamGameDto) {
         return new ResponseEntity<>(service.createGame(steamGameDto), HttpStatus.CREATED);
     }
 
+    // Update the game using its id
     @PutMapping("/game/{id}/update")
     public ResponseEntity<SteamGameDto> updateGame(@RequestBody SteamGameDto steamGameDto, @PathVariable("id") int appId) {
         SteamGameDto response = service.updateGame(steamGameDto, appId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // Delete the game using its id
     @DeleteMapping("/game/{id}/delete")
     public ResponseEntity<String> deleteGame(@PathVariable("id") int appId) {
         service.deleteGameById(appId);
