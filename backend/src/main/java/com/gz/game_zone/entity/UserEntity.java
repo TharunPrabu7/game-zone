@@ -17,7 +17,7 @@ public class UserEntity {
     private int id;
 
     @Column(name = "user_name")
-    private String userName;
+    private String username;
 
     @Column(name = "email")
     private String email;
