@@ -1,9 +1,12 @@
 package com.gz.game_zone.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +14,7 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtGenerator {
     private static final String SECRET = SecurityConstants.JWT_SECRET;
@@ -28,7 +32,7 @@ public class JwtGenerator {
                 .setSubject(username)
                 .setIssuedAt(currentDate)
                 .setExpiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -40,5 +44,18 @@ public class JwtGenerator {
                 .getBody();
 
         return claims.getSubject();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException ex) {
+            log.error("JWT validation failed: {}", ex.getMessage());
+            throw new AuthenticationCredentialsNotFoundException("Invalid or expired JWT token.");
+        }
     }
 }
