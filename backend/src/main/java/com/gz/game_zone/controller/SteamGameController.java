@@ -11,14 +11,14 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/")
+@RequestMapping("/api/game")
 public class SteamGameController {
 
     @Autowired
     private SteamGameService service;
 
     // Get everything
-    @GetMapping("/game")
+    @GetMapping("/")
     public ResponseEntity<SteamGameResponse> getGames(
             @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
@@ -81,34 +81,34 @@ public class SteamGameController {
     }
 
     // Get sorted list by meta critic score
-    @GetMapping("/game/sort/{field}")
+    @GetMapping("/sort/{field}")
     public ResponseEntity<List<SteamGameDto>> getGameWithSort(@PathVariable String field) {
         List<SteamGameDto> allGamesSorted = service.findGameWithSorting(field);
         return ResponseEntity.ok(allGamesSorted);
     }
 
     // Get every detail about a game using its id
-    @GetMapping("/game/{appid}")
+    @GetMapping("/details/{appid}")
     public ResponseEntity<GameDto> getOneGameById(@PathVariable int appid) {
         return ResponseEntity.ok(service.getGame(appid));
     }
 
     // Add a game
-    @PostMapping("/game/add")
+    @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<SteamGameDto> addGame(@RequestBody SteamGameDto steamGameDto) {
         return new ResponseEntity<>(service.createGame(steamGameDto), HttpStatus.CREATED);
     }
 
     // Update the game using its id
-    @PutMapping("/game/{id}/update")
+    @PutMapping("/{id}/update")
     public ResponseEntity<SteamGameDto> updateGame(@RequestBody SteamGameDto steamGameDto, @PathVariable("id") int appId) {
         SteamGameDto response = service.updateGame(steamGameDto, appId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // Delete the game using its id
-    @DeleteMapping("/game/{id}/delete")
+    @DeleteMapping("/{id}/delete")
     public ResponseEntity<String> deleteGame(@PathVariable("id") int appId) {
         service.deleteGameById(appId);
         return ResponseEntity.ok("Game deleted successfully.");
