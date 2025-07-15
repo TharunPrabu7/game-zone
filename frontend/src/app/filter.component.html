@@ -1,0 +1,20 @@
+<div class="p-6">
+  <h2 class="text-xl font-bold mb-4">Filter Games</h2>
+
+  <div class="flex space-x-4 mb-4">
+    <select [(ngModel)]="filterType" class="border rounded px-4 py-2">
+      <option value="genre">Genre</option>
+      <option value="tag">Tag</option>
+      <option value="developer">Developer</option>
+      <option value="publisher">Publisher</option>
+    </select>
+    <input [(ngModel)]="filterValue" class="border rounded px-4 py-2" placeholder="Enter value" />
+    <button (click)="onFilter()" class="bg-blue-600 text-white px-4 py-2 rounded">Search</button>
+  </div>
+
+  <div *ngFor="let game of games" class="mb-2 border rounded p-3">
+    <h3 class="font-semibold">{{ game.name }}</h3>
+    <p>Metacritic: {{ game.metacritic }}</p>
+    <p>Release: {{ game.released_date }}</p>
+  </div>
+</div>
