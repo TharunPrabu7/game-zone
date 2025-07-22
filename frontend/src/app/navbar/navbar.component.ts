@@ -7,16 +7,18 @@ import { AuthService } from '../_services/auth.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
+  isLoggedIn: boolean = false;
 
-  constructor(public auth:AuthService) { }
+  constructor(public auth: AuthService) {}
 
   ngOnInit(): void {
+    // Subscribe to login state
+    this.auth.isLoggedIn().subscribe((status) => {
+      this.isLoggedIn = status;
+    });
   }
 
-  logout(){
-      //remove token
-      this.auth.removeToken();
-      this.auth.canAccess();
+  logout(): void {
+    this.auth.removeToken(); // This also handles navigation to /login
   }
-
 }

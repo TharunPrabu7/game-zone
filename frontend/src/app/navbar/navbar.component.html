@@ -6,7 +6,7 @@
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
   <ul class="navbar-nav mr-auto"  >
 
-    <ng-container *ngIf="this.auth.isAuthenticated();then authenticated;else notAuthenticated">
+    <ng-container *ngIf="isLoggedIn;then authenticated;else notAuthenticated">
 
     </ng-container>
 

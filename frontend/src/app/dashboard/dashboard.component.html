@@ -1,12 +1,7 @@
-<div class="p-6 max-w-4xl mx-auto">
-  <h2 class="text-xl font-bold mb-4">Dashboard</h2>
-
-  <div *ngIf="token; else noToken">
-    <p class="mb-2">JWT Token:</p>
-    <pre class="bg-gray-100 p-4 rounded text-sm break-words">{{ token }}</pre>
-  </div>
-
-  <ng-template #noToken>
-    <p class="text-red-500">No token found. Please log in.</p>
-  </ng-template>
+<app-navbar></app-navbar>
+<div class="dashboard">
+  <h2>Dashboard</h2>
+  <p><strong>Token Type:</strong> {{ tokenType }}</p>
+  <p><strong>Access Token:</strong></p>
+  <textarea readonly rows="6" style="width:100%;">{{ accessToken }}</textarea>
 </div>

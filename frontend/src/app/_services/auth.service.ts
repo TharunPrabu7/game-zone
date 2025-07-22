@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,9 @@ export class AuthService {
 
   private registerUrl = 'http://localhost:8080/api/auth/register';
   private loginUrl = 'http://localhost:8080/api/auth/login';
+
+  // Reactive auth state
+  private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -19,40 +23,52 @@ export class AuthService {
   }
 
   // Login User
-  login(email: string, password: string) {
-    return this.http.post<any>(this.loginUrl, { email, password });
+  login(username: string, password: string) {
+    return this.http.post<any>(this.loginUrl, { username, password });
   }
 
-  // Store JWT token
-  storeToken(token: string) {
-    localStorage.setItem('jwtToken', token);
+  // Store full auth object
+  storeAuthData(data: { accessToken: string, tokenType: string }) {
+    localStorage.setItem('authData', JSON.stringify(data));
+    this.loggedIn.next(true);
   }
 
   // Get token
   getToken(): string | null {
-    return localStorage.getItem('jwtToken');
+    const authData = localStorage.getItem('authData');
+    if (authData) {
+      return JSON.parse(authData).accessToken;
+    }
+    return null;
   }
 
-  // Check if user is authenticated
-  isAuthenticated(): boolean {
+  // Check token presence
+  hasToken(): boolean {
     return !!this.getToken();
   }
 
-  // Remove token (logout)
-  removeToken() {
-    localStorage.removeItem('jwtToken');
+  // Public observable to subscribe in components (like navbar)
+  isLoggedIn(): Observable<boolean> {
+    return this.loggedIn.asObservable();
   }
 
-  // Redirect if already authenticated
+  // Logout
+  removeToken() {
+    localStorage.removeItem('authData');
+    this.loggedIn.next(false);
+    this.router.navigate(['/login']);
+  }
+
+  // Auto-redirect if already logged in
   canAuthenticate() {
-    if (this.isAuthenticated()) {
+    if (this.hasToken()) {
       this.router.navigate(['/dashboard']);
     }
   }
 
-  // Protect access to restricted routes
+  // Redirect if trying to access protected route without login
   canAccess() {
-    if (!this.isAuthenticated()) {
+    if (!this.hasToken()) {
       this.router.navigate(['/login']);
     }
   }

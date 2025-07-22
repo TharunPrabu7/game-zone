@@ -24,11 +24,12 @@ export class LoginComponent {
     this.errorMessage = '';
 
     const { username, password } = this.formdata;
+    console.log('Login form data: ', this.formdata);
 
     this.authService.login(username, password).subscribe({
       next: (response) => {
         this.loading = false;
-        localStorage.setItem('token', response.token);
+        this.authService.storeAuthData(response);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {

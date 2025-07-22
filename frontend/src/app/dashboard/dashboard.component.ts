@@ -6,9 +6,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  token: string | null = null;
+  accessToken: string | null = '';
+  tokenType: string | null = '';
 
   ngOnInit(): void {
-    this.token = localStorage.getItem('jwtToken');
+    const data = localStorage.getItem('authData');
+    if (data) {
+      const parsed = JSON.parse(data);
+      this.accessToken = parsed.accessToken;
+      this.tokenType = parsed.tokenType;
+    }
   }
 }
