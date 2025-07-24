@@ -3,71 +3,80 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 
+interface AuthResponse {
+  accessToken: string;
+  tokenType: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   private registerUrl = 'http://localhost:8080/api/auth/register';
   private loginUrl = 'http://localhost:8080/api/auth/login';
 
-  // Reactive auth state
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
   constructor(private http: HttpClient, private router: Router) {}
 
   // Register User
-  register(name: string, email: string, password: string) {
-    const body = { name, email, password };
-    return this.http.post<any>(this.registerUrl, body);
+  register(name: string, email: string, password: string): Observable<any> {
+    return this.http.post<any>(this.registerUrl, { name, email, password });
   }
 
   // Login User
-  login(username: string, password: string) {
-    return this.http.post<any>(this.loginUrl, { username, password });
+  login(username: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(this.loginUrl, { username, password });
   }
 
   // Store full auth object
-  storeAuthData(data: { accessToken: string, tokenType: string }) {
+  storeAuthData(data: AuthResponse): void {
     localStorage.setItem('authData', JSON.stringify(data));
     this.loggedIn.next(true);
   }
 
-  // Get token
+  // Get token (Bearer ...)
   getToken(): string | null {
     const authData = localStorage.getItem('authData');
     if (authData) {
-      return JSON.parse(authData).accessToken;
+      const { accessToken, tokenType } = JSON.parse(authData);
+      return `${tokenType} ${accessToken}`;
     }
     return null;
   }
 
-  // Check token presence
+  // Get full auth object
+  getAuthData(): AuthResponse | null {
+    const data = localStorage.getItem('authData');
+    return data ? JSON.parse(data) : null;
+  }
+
+  // Token presence
   hasToken(): boolean {
     return !!this.getToken();
   }
 
-  // Public observable to subscribe in components (like navbar)
+  // Auth state observable
   isLoggedIn(): Observable<boolean> {
     return this.loggedIn.asObservable();
   }
 
-  // Logout
-  removeToken() {
+  // Logout user
+  removeToken(): void {
     localStorage.removeItem('authData');
     this.loggedIn.next(false);
     this.router.navigate(['/login']);
   }
 
-  // Auto-redirect if already logged in
-  canAuthenticate() {
+  // Redirect to dashboard if already logged in
+  canAuthenticate(): void {
     if (this.hasToken()) {
       this.router.navigate(['/dashboard']);
     }
   }
 
-  // Redirect if trying to access protected route without login
-  canAccess() {
+  // Redirect to login if not logged in
+  canAccess(): void {
     if (!this.hasToken()) {
       this.router.navigate(['/login']);
     }

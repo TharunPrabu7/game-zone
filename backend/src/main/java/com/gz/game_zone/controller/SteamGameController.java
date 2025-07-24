@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/game")
 public class SteamGameController {
 
@@ -18,7 +18,7 @@ public class SteamGameController {
     private SteamGameService service;
 
     // Get everything
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<SteamGameResponse> getGames(
             @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize

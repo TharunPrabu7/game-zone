@@ -1,41 +1,52 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../_services/auth.service';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from '../_services/auth.service';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
   formdata = {
     username: '',
     password: ''
   };
-  loading = false;
-  submit = false;
-  errorMessage = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  submit: boolean = false;
+  loading: boolean = false;
+  errorMessage: string = '';
+
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   onSubmit(): void {
     this.submit = true;
-    this.loading = true;
     this.errorMessage = '';
+    this.loading = true;
 
-    const { username, password } = this.formdata;
-    console.log('Login form data: ', this.formdata);
+    const loginData = {
+      username: this.formdata.username,
+      password: this.formdata.password
+    };
 
-    this.authService.login(username, password).subscribe({
-      next: (response) => {
-        this.loading = false;
-        this.authService.storeAuthData(response);
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.loading = false;
-        this.errorMessage = 'Login failed. Check your credentials.';
-      }
-    });
+    this.http
+      .post<{ accessToken: string; tokenType: string }>('http://localhost:8080/api/auth/login', loginData)
+      .subscribe({
+        next: (response) => {
+          this.authService.storeAuthData(response);
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          this.errorMessage = 'Invalid username or password';
+          console.error('Login error', error);
+        },
+        complete: () => {
+          this.loading = false;
+        }
+      });
   }
 }

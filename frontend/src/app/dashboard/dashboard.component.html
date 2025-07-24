@@ -1,7 +1,35 @@
 <app-navbar></app-navbar>
-<div class="dashboard">
-  <h2>Dashboard</h2>
-  <p><strong>Token Type:</strong> {{ tokenType }}</p>
-  <p><strong>Access Token:</strong></p>
-  <textarea readonly rows="6" style="width:100%;">{{ accessToken }}</textarea>
+<div class="container mt-5">
+  <h2 class="mb-4">Game Dashboard</h2>
+
+  <div *ngIf="games.length > 0; else noGames">
+    <table class="table table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>App ID</th>
+          <th>Name</th>
+          <th>Metacritic</th>
+          <th>Release Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let game of games">
+          <td>{{ game.appid }}</td>
+          <td>{{ game.name }}</td>
+          <td>{{ game.metacritic }}</td>
+          <td>{{ game.released_date | date }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button class="btn btn-primary" (click)="prevPage()" [disabled]="pageNo === 0">Previous</button>
+      <button class="btn btn-primary" (click)="nextPage()">Next</button>
+    </div>
+  </div>
+
+  <ng-template #noGames>
+    <p>No games available to display.</p>
+  </ng-template>
 </div>
+
